@@ -5,7 +5,7 @@
 	   create-clog-ace-design
 	   mode text-value theme tab-size
 	   clipboard-copy clipboard-paste
-	   excute-command focus move-cursor resize
+	   excute-command focus move-cursor resize selected-text
            init-clog-ace
 	   attach-clog-ace
            start-test))
@@ -159,6 +159,16 @@ in builder representing clog-ace at design time."))
 (defmethod theme ((obj clog-ace-element) theme)
   (js-execute obj (format nil "~A.setTheme('~A')" (js-ace obj) theme)))
 
+;;;;;;;;;;;;;;;;;;;
+;; selected-text ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defgeneric selected-text (clog-ace-element)
+  (:documentation "Get currently selected (read only)"))
+
+(defmethod selected-text ((obj clog-ace-element))
+  (js-query obj (format nil "~A.getCopyText()" (js-ace obj))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Methods - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -255,7 +265,9 @@ the CLOG-ACE-ELEMENT"))
   ;; and vertically our div on the screen.
   (let* ((layout (create-panel-box-layout body))
 	 (test   (create-clog-ace-element (center-panel layout)))
-	 (button (create-button (top-panel layout) :content "Resize")))
+	 (button (create-button (top-panel layout) :content "Resize"))
+	 (sel    (create-button (top-panel layout) :content "Selection"))
+	 (text   (create-button (top-panel layout) :content "Text")))
     (center-children (center-panel layout))
     (set-on-cut test (lambda (obj)
 		       (declare (ignore obj))
@@ -275,6 +287,12 @@ the CLOG-ACE-ELEMENT"))
     (set-on-change test (lambda (obj)
 			  (declare (ignore obj))
 			  (print "change")))
+    (set-on-click text (lambda (obj)
+			 (declare (ignore obj))
+			 (print (text-value test))))
+    (set-on-click sel (lambda (obj)
+			 (declare (ignore obj))
+			 (print (selected-text test))))
     (set-on-click button (lambda (obj)
 			   (declare (ignore obj))
 			   (set-geometry test :height 300)

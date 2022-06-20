@@ -62,6 +62,53 @@ in builder representing clog-ace at design time."))
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmethod set-on-change ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-change" (lambda (obj)
+				       (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('change', function()~
+                                  {~A.trigger('clog-ace-change')})"
+			  (js-ace obj)
+			  (jquery obj))))
+
+(defmethod set-on-blur ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-blur" (lambda (obj)
+				      (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('blur', function()~
+                                  {~A.trigger('clog-ace-blur')})"
+			  (js-ace obj)
+			  (jquery obj))))
+
+(defmethod set-on-focus ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-focus" (lambda (obj)
+				       (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('focus', function()~
+                                  {~A.trigger('clog-ace-focus')})"
+			   (js-ace obj)
+			   (jquery obj))))
+
+(defmethod set-on-cut ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-cut" (lambda (obj)
+				       (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('cut', function()~
+                                  {~A.trigger('clog-ace-cut')})"
+			  (js-ace obj)
+			  (jquery obj))))
+
+(defmethod set-on-copy ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-copy" (lambda (obj)
+					(funcall handler obj)))
+  (js-execute obj (format nil "~A.on('copy', function()~
+                                  {~A.trigger('clog-ace-copy')})"
+			  (js-ace obj)
+			  (jquery obj))))
+
+(defmethod set-on-paste ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-paste" (lambda (obj)
+					(funcall handler obj)))
+  (js-execute obj (format nil "~A.on('paste', function()~
+                                  {~A.trigger('clog-ace-paste')})"
+			  (js-ace obj)
+			  (jquery obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Properties - clog-ace-element
@@ -93,14 +140,8 @@ in builder representing clog-ace at design time."))
 ;; text-value ;;
 ;;;;;;;;;;;;;;;;
 
-(defgeneric text-value (clog-ace-element)
-  (:documentation "Text in editor"))
-
 (defmethod text-value ((obj clog-ace-element))
   (js-query obj (format nil "~A.getValue()" (js-ace obj))))
-
-(defgeneric set-text-value (clog-ace-element value)
-  (:documentation "Set text of editor"))
 
 (defmethod set-text-value ((obj clog-ace-element) value)
   (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) theme)))
@@ -164,9 +205,6 @@ in builder representing clog-ace at design time."))
 ;; focus ;;
 ;;;;;;;;;;;
 
-(defgeneric focus (clog-ace-element)
-  (:documentation "focus on editor"))
-
 (defmethod focus ((obj clog-ace-element))
   (js-execute obj (format nil "~A.focus()" (js-ace obj))))
 
@@ -201,7 +239,7 @@ the CLOG-ACE-ELEMENT"))
 	       "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js"))
 
 (defun js-ace (obj)
-  "Javascript editor variable"
+  "Javascript editor variable (private)"
   (check-type obj clog:clog-obj)  
   (format nil "clog['editor_~A']" (html-id obj)))
 	  
@@ -219,7 +257,26 @@ the CLOG-ACE-ELEMENT"))
 	 (test   (create-clog-ace-element (center-panel layout)))
 	 (button (create-button (top-panel layout) :content "Resize")))
     (center-children (center-panel layout))
+    (set-on-cut test (lambda (obj)
+		       (declare (ignore obj))
+		       (print "cut")))
+    (set-on-copy test (lambda (obj)
+			(declare (ignore obj))
+		       (print "copy")))
+    (set-on-paste test (lambda (obj)
+			 (declare (ignore obj))
+		       (print "paste")))
+    (set-on-focus test (lambda (obj)
+			 (declare (ignore obj))
+			 (print "focus")))
+    (set-on-blur test (lambda (obj)
+			(declare (ignore obj))
+			(print "blur")))
+    (set-on-change test (lambda (obj)
+			  (declare (ignore obj))
+			  (print "change")))
     (set-on-click button (lambda (obj)
+			   (declare (ignore obj))
 			   (set-geometry test :height 300)
 			   (clog-ace:resize test)))))
   

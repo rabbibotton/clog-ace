@@ -3,8 +3,9 @@
   (:export clog-ace-element
 	   create-clog-ace-element
 	   create-clog-ace-design
-	   mode theme tab-size
-	   resize
+	   mode text-value theme tab-size
+	   clipboard-copy clipboard-paste
+	   excute-command focus move-cursor resize
            init-clog-ace
 	   attach-clog-ace
            start-test))
@@ -88,6 +89,24 @@ in builder representing clog-ace at design time."))
 (defmethod tab-size ((obj clog-ace-element) tab-size)
   (js-execute obj (format nil "~A.session.setTabSize(~A)" (js-ace obj) tab-size)))
 
+;;;;;;;;;;;;;;;;
+;; text-value ;;
+;;;;;;;;;;;;;;;;
+
+(defgeneric text-value (clog-ace-element)
+  (:documentation "Text in editor"))
+
+(defmethod text-value ((obj clog-ace-element))
+  (js-query obj (format nil "~A.getValue()" (js-ace obj))))
+
+(defgeneric set-text-value (clog-ace-element value)
+  (:documentation "Set text of editor"))
+
+(defmethod set-text-value ((obj clog-ace-element) value)
+  (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) theme)))
+
+(defsetf text-value set-text)
+
 ;;;;;;;;;;;
 ;; theme ;;
 ;;;;;;;;;;;
@@ -102,6 +121,64 @@ in builder representing clog-ace at design time."))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Methods - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;
+;; clipboard-copy ;;
+;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric clipboard-copy (clog-ace-element)
+  (:documentation "Copy selected text to global clipboard and return text."))
+
+(defmethod clipboard-copy ((obj clog-ace-element))
+  (js-query obj (format nil "~A.execCommand('copy');~
+                             navigator.clipboard.writeText(~A.getCopyText());~
+                             ~A.getCopyText();"
+			(js-ace obj)
+			(js-ace obj)
+			(js-ace obj))))
+
+;;;;;;;;;;;;;;;;;;;;;
+;; clipboard-paste ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric clipboard-paste (clog-ace-element)
+  (:documentation "Paste selected text to global clipboard and return text."))
+
+(defmethod clipboard-paste ((obj clog-ace-element))
+  (js-execute obj (format nil "navigator.clipboard.readText().then(function(text) {~
+                                        editor_~A.execCommand('paste', text)~
+                                     }"
+			  (js-ace obj))))
+
+;;;;;;;;;;;;;;;;;;;;;
+;; execute-command ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric execute-command (clog-ace-element command)
+  (:documentation "execute-command COMMAND"))
+
+(defmethod execute-command ((obj clog-ace-element) command)
+  (js-execute obj (format nil "~A.execCommand('~A')" (js-ace obj) command)))
+
+;;;;;;;;;;;
+;; focus ;;
+;;;;;;;;;;;
+
+(defgeneric focus (clog-ace-element)
+  (:documentation "focus on editor"))
+
+(defmethod focus ((obj clog-ace-element))
+  (js-execute obj (format nil "~A.focus()" (js-ace obj))))
+
+;;;;;;;;;;;;;;;;;
+;; move-cursor ;;
+;;;;;;;;;;;;;;;;;
+
+(defgeneric move-cursor (clog-ace-element x y)
+  (:documentation "move-cursor to x y"))
+
+(defmethod move-cursor ((obj clog-ace-element) x y)
+  (js-execute obj (format nil "~A.moveCursorTo(~A,~A)" (js-ace obj) x y)))
 
 ;;;;;;;;;;;;
 ;; resize ;;
@@ -131,8 +208,7 @@ the CLOG-ACE-ELEMENT"))
 (defun attach-clog-ace (obj)
   "Initialize plugin"
   (init-clog-ace obj)
-  (js-execute obj (format nil
-			  "~A = ace.edit('~A')"
+  (js-execute obj (format nil "~A = ace.edit('~A')"
 			  (js-ace obj) (html-id obj))))
 
 (defun on-test-clog-ace (body)

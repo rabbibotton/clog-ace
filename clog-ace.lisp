@@ -146,8 +146,6 @@ in builder representing clog-ace at design time."))
 (defmethod set-text-value ((obj clog-ace-element) value)
   (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) theme)))
 
-(defsetf text-value set-text)
-
 ;;;;;;;;;;;
 ;; theme ;;
 ;;;;;;;;;;;

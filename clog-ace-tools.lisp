@@ -11,7 +11,7 @@
 	   ;; the create-function used to create the function
 	   ;; at _design time_ at run time only clog:attach-as-child is used
 	   ;; any initialization at _run time_ is done with :on-setup below.
-	   :create         clog-ace:create-clog-ace-design
+	   :create         clog-ace:create-clog-ace-element
 	   ;; clog has the following create-types
 	   ;;   :base         - create
 	   ;;   :element      - create create-content
@@ -23,6 +23,8 @@
 	   ;; setup the control at _design time_ and custom attributes
 	   :setup          ,(lambda (control content control-record)
                               (declare (ignore content) (ignore control-record))
+			      ;; tell the builder this is a composite control
+			      (setf (attribute control "data-clog-composite-control") "t")			      
 			      ;; default custom attribute values and events at design time
                               (setf (attribute control "data-clog-ace-theme") "ace/theme/xcode")
                               (setf (attribute control "data-clog-ace-mode") "ace/mode/lisp")

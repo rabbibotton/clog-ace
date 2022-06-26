@@ -118,23 +118,41 @@ in builder representing clog-ace at design time."))
 ;; mode ;;
 ;;;;;;;;;;
 
-(defgeneric mode (clog-ace-element mode)
-  (:documentation "The ace edit mode. eg. ace/mode/lisp (write-only)"))
+(defgeneric mode (clog-ace-element)
+  (:documentation "The ace edit mode. eg. ace/mode/lisp"))
 
 
-(defmethod mode ((obj clog-ace-element) mode)
+(defmethod mode ((obj clog-ace-element))
+  (js-query obj (format nil "~A.session.getMode()" (js-ace obj))))
+
+(defgeneric set-mode (clog-ace-element mode)
+  (:documentation "The ace edit mode. eg. ace/mode/lisp"))
+
+
+(defmethod set-mode ((obj clog-ace-element) mode)
   (js-execute obj (format nil "~A.session.setMode('~A')" (js-ace obj) mode)))
+
+(defsetf mode set-mode)
 
 ;;;;;;;;;;;;;;
 ;; tab-size ;;
 ;;;;;;;;;;;;;;
 
-(defgeneric tab-size (clog-ace-element tab-size)
-  (:documentation "Tab size (write-only)"))
+(defgeneric tab-size (clog-ace-element)
+  (:documentation "Tab size"))
 
 
-(defmethod tab-size ((obj clog-ace-element) tab-size)
+(defmethod tab-size ((obj clog-ace-element))
+  (js-query obj (format nil "~A.session.getTabSize()" (js-ace obj))))
+
+(defgeneric set-tab-size (clog-ace-element tab-size)
+  (:documentation "Tab size"))
+
+
+(defmethod set-tab-size ((obj clog-ace-element) tab-size)
   (js-execute obj (format nil "~A.session.setTabSize(~A)" (js-ace obj) tab-size)))
+
+(defsetf tab-size set-tab-size)
 
 ;;;;;;;;;;;;;;;;
 ;; text-value ;;
@@ -150,12 +168,21 @@ in builder representing clog-ace at design time."))
 ;; theme ;;
 ;;;;;;;;;;;
 
-(defgeneric theme (clog-ace-element theme)
-  (:documentation "The ace color theme. eg. ace/theme/xcode (write-only)"))
+(defgeneric theme (clog-ace-element)
+  (:documentation "The ace color theme. eg. ace/theme/xcode"))
 
 
-(defmethod theme ((obj clog-ace-element) theme)
+(defmethod theme ((obj clog-ace-element) )
+  (js-query obj (format nil "~A.getTheme()" (js-ace obj))))
+
+(defgeneric set-theme (clog-ace-element theme)
+  (:documentation "The ace color theme. eg. ace/theme/xcode"))
+
+
+(defmethod set-theme ((obj clog-ace-element) theme)
   (js-execute obj (format nil "~A.setTheme('~A')" (js-ace obj) theme)))
+
+(defsetf theme set-theme)
 
 ;;;;;;;;;;;;;;;;;;;
 ;; selected-text ;;

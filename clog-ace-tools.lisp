@@ -27,16 +27,18 @@
 			      (setf (attribute control "data-clog-composite-control") "t")			      
 			      ;; default custom attribute values and events at design time
                               (setf (attribute control "data-clog-ace-theme") "ace/theme/xcode")
+			      (setf (clog-ace:theme control) "ace/theme/xcode")
                               (setf (attribute control "data-clog-ace-mode") "ace/mode/lisp")
+			      (setf (clog-ace:mode control) "ace/mode/lisp")
                               (setf (attribute control "data-clog-ace-tab-size") "2"))
 	   ;; code to run at _run time_ after all controls attached to panel
 	   :on-setup       ,(lambda (control control-record)
-                              (declare (ignore control control-record))
+                              (declare (ignore control-record))
 			      ;; initialization at run time and apply custom attributes
 			      (format nil "(clog-ace:attach-clog-ace target)
-(clog-ace:theme target \"~A\")
-(clog-ace:mode target \"~A\")
-(clog-ace:tab-size target ~A)"
+(setf (clog-ace:theme target) \"~A\")
+(setf (clog-ace:mode target) \"~A\")
+(setf (clog-ace:tab-size target) ~A)"
 				      (attribute control "data-clog-ace-theme")
 				      (attribute control "data-clog-ace-mode")
 				      (attribute control "data-clog-ace-tab-size")))
@@ -44,9 +46,17 @@
            :events         (,@clog-tools::*events-element*)
 	   ;; properties handled
 	   :properties     ((:name "ace theme"
-			     :attr "data-clog-ace-theme")
+			     :set  ,(lambda (control obj)
+				      (setf (attribute control "data-clog-ace-theme") (text obj))
+				      (setf (clog-ace:theme control) (text obj)))
+			     :get  ,(lambda (control)
+				      (attribute control "data-clog-ace-theme")))
 			    (:name "ace mode"
-			     :attr "data-clog-ace-mode")
+			     :set  ,(lambda (control obj)
+				      (setf (attribute control "data-clog-ace-mode") (text obj))
+				      (setf (clog-ace:theme control) (text obj)))
+			     :get  ,(lambda (control)
+				      (attribute control "data-clog-ace-mode")))
 			    (:name "ace tab size"
 			     :attr "data-clog-ace-tab-size")
 			    ,@clog-tools::*props-element*))))

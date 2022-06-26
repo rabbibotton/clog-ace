@@ -31,6 +31,10 @@
                               (setf (attribute control "data-clog-ace-mode") "ace/mode/lisp")
 			      (setf (clog-ace:mode control) "ace/mode/lisp")
                               (setf (attribute control "data-clog-ace-tab-size") "2"))
+	   ;; code to run at _design time_ on load from .clog file
+	   :on-load        ,(lambda (control control-record)
+			      (declare (ignore control-record))
+			     (clog-ace:attach-clog-ace control))
 	   ;; code to run at _run time_ after all controls attached to panel
 	   :on-setup       ,(lambda (control control-record)
                               (declare (ignore control-record))

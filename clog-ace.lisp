@@ -2,7 +2,6 @@
   (:use #:cl #:clog)
   (:export clog-ace-element
 	   create-clog-ace-element
-	   create-clog-ace-design
 	   mode text-value theme tab-size
 	   clipboard-copy clipboard-paste
 	   excute-command focus move-cursor resize selected-text
@@ -38,25 +37,6 @@
     (set-border new-obj :thin :solid :black)
     (attach-clog-ace new-obj)
     (change-class new-obj 'clog-ace-element)))
-
-(defgeneric create-clog-ace-design (clog-obj &key hidden class html-id auto-place)
-  (:documentation "Create a new clog-ace-element as child of CLOG-OBJ to display
-in builder representing clog-ace at design time."))
-
-(defmethod create-clog-ace-design ((obj clog:clog-obj)
-					&key
-					  (hidden nil)
-					  (class nil)
-					  (html-id nil)
-					  (auto-place t))
-  (let ((new-obj (create-div obj
-			     :class class
-			     :hidden hidden
-			     :html-id html-id
-			     :auto-place auto-place)))
-    (set-geometry new-obj :width 400 :height 200)
-    (set-border new-obj :thin :solid :black)
-    new-obj))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Events - clog-ace-element

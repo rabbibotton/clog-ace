@@ -2,7 +2,13 @@
 
 (progn
   (clog-tools:add-supported-controls
-   (list `(;; unique name to control used to identify it the .clog xml
+   (list '(:name           "group"
+	   :description    "Ace Editor"
+	   :create         nil
+	   :create-type    nil
+	   :events         nil
+	   :properties     nil)
+         `(;; unique name to control used to identify it the .clog xml
            :name           "clog-ace"
 	   ;; how control appears in builder control list 
 	   :description    "clog-ace"
@@ -22,7 +28,7 @@
 	   :create-type    :base
 	   ;; setup the control at _design time_ and custom attributes
 	   :setup          ,(lambda (control content control-record)
-                              (declare (ignore content) (ignore control-record))
+                              (declare (ignore content control-record))
 			      ;; tell the builder this is a composite control
 			      (setf (attribute control "data-clog-composite-control") "t")			      
 			      ;; default custom attribute values and events at design time

@@ -141,10 +141,8 @@
 (defmethod text-value ((obj clog-ace-element))
   (js-query obj (format nil "~A.getValue()" (js-ace obj))))
 
-(defmethod set-text-value ((obj clog-ace-element) value)
+(defmethod (setf text-value) (value (obj clog-ace-element))
   (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) (escape-string value))))
-
-(defsetf text-value set-text-value)
 
 ;;;;;;;;;;;
 ;; theme ;;

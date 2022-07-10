@@ -142,7 +142,9 @@
   (js-query obj (format nil "~A.getValue()" (js-ace obj))))
 
 (defmethod set-text-value ((obj clog-ace-element) value)
-  (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) theme)))
+  (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) (escape-string value))))
+
+(defsetf text-value set-text-value)
 
 ;;;;;;;;;;;
 ;; theme ;;
@@ -272,6 +274,7 @@ the CLOG-ACE-ELEMENT"))
 	 (test   (create-clog-ace-element (center-panel layout)))
 	 (button (create-button (top-panel layout) :content "Resize"))
 	 (sel    (create-button (top-panel layout) :content "Selection"))
+	 (stext  (create-button (top-panel layout) :content "Set Text"))
 	 (text   (create-button (top-panel layout) :content "Text")))
     (center-children (center-panel layout))
     (set-on-cut test (lambda (obj)
@@ -292,6 +295,9 @@ the CLOG-ACE-ELEMENT"))
     (set-on-change test (lambda (obj)
 			  (declare (ignore obj))
 			  (print "change")))
+    (set-on-click stext (lambda (obj)
+			 (declare (ignore obj))
+			 (setf (text-value test) "test text")))
     (set-on-click text (lambda (obj)
 			 (declare (ignore obj))
 			 (print (text-value test))))

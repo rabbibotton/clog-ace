@@ -10,7 +10,7 @@
 	   :properties     nil)
          `(;; unique name to control used to identify it the .clog xml
            :name           "clog-ace"
-	   ;; how control appears in builder control list 
+	   ;; how control appears in builder control list
 	   :description    "clog-ace"
 	   ;; the common lisp type of the control
 	   :clog-type      clog-ace:clog-ace-element
@@ -30,13 +30,14 @@
 	   :setup          ,(lambda (control content control-record)
                               (declare (ignore content control-record))
 			      ;; tell the builder this is a composite control
-			      (setf (attribute control "data-clog-composite-control") "t")			      
+			      (setf (attribute control "data-clog-composite-control") "t")
 			      ;; default custom attribute values and events at design time
                               (setf (attribute control "data-clog-ace-theme") "ace/theme/xcode")
 			      (setf (clog-ace:theme control) "ace/theme/xcode")
                               (setf (attribute control "data-clog-ace-mode") "ace/mode/lisp")
 			      (setf (clog-ace:mode control) "ace/mode/lisp")
-                              (setf (attribute control "data-clog-ace-tab-size") "2"))
+                              (setf (attribute control "data-clog-ace-tab-size") "2")
+			      (setf (clog-ace:tab-size control) 2))
 	   ;; code to run at _design time_ on load from .clog file or paste
 	   :on-load        ,(lambda (control control-record)
 			      (declare (ignore control-record))

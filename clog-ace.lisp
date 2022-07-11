@@ -255,9 +255,9 @@ the CLOG-ACE-ELEMENT"))
 
 (defun js-ace (obj)
   "Javascript editor variable (private)"
-  (check-type obj clog:clog-obj)  
+  (check-type obj clog:clog-obj)
   (format nil "clog['editor_~A']" (html-id obj)))
-	  
+
 (defun attach-clog-ace (obj)
   "Initialize plugin"
   (init-clog-ace obj)
@@ -306,10 +306,9 @@ the CLOG-ACE-ELEMENT"))
 			   (declare (ignore obj))
 			   (set-geometry test :height 300)
 			   (clog-ace:resize test)))))
-  
+
 (defun start-test ()
   (initialize 'on-test-clog-ace
    :static-root (merge-pathnames "./www/"
 		  (asdf:system-source-directory :clog-ace)))
   (open-browser))
-

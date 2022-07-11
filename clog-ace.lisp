@@ -39,58 +39,6 @@
     (change-class new-obj 'clog-ace-element)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Events - clog-ace-element
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod set-on-change ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-change" (lambda (obj)
-				       (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('change', function()~
-                                  {~A.trigger('clog-ace-change')})"
-			  (js-ace obj)
-			  (jquery obj))))
-
-(defmethod set-on-blur ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-blur" (lambda (obj)
-				      (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('blur', function()~
-                                  {~A.trigger('clog-ace-blur')})"
-			  (js-ace obj)
-			  (jquery obj))))
-
-(defmethod set-on-focus ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-focus" (lambda (obj)
-				       (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('focus', function()~
-                                  {~A.trigger('clog-ace-focus')})"
-			   (js-ace obj)
-			   (jquery obj))))
-
-(defmethod set-on-cut ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-cut" (lambda (obj)
-				       (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('cut', function()~
-                                  {~A.trigger('clog-ace-cut')})"
-			  (js-ace obj)
-			  (jquery obj))))
-
-(defmethod set-on-copy ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-copy" (lambda (obj)
-					(funcall handler obj)))
-  (js-execute obj (format nil "~A.on('copy', function()~
-                                  {~A.trigger('clog-ace-copy')})"
-			  (js-ace obj)
-			  (jquery obj))))
-
-(defmethod set-on-paste ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-paste" (lambda (obj)
-					(funcall handler obj)))
-  (js-execute obj (format nil "~A.on('paste', function()~
-                                  {~A.trigger('clog-ace-paste')})"
-			  (js-ace obj)
-			  (jquery obj))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Properties - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -101,18 +49,14 @@
 (defgeneric mode (clog-ace-element)
   (:documentation "The ace edit mode. eg. ace/mode/lisp"))
 
-
 (defmethod mode ((obj clog-ace-element))
   (js-query obj (format nil "~A.session.getMode()" (js-ace obj))))
 
-(defgeneric set-mode (clog-ace-element mode)
+(defgeneric (setf mode) (mode clog-ace-element)
   (:documentation "The ace edit mode. eg. ace/mode/lisp"))
 
-
-(defmethod set-mode ((obj clog-ace-element) mode)
+(defmethod (setf mode) (mode (obj clog-ace-element))
   (js-execute obj (format nil "~A.session.setMode('~A')" (js-ace obj) mode)))
-
-(defsetf mode set-mode)
 
 ;;;;;;;;;;;;;;
 ;; tab-size ;;
@@ -121,18 +65,14 @@
 (defgeneric tab-size (clog-ace-element)
   (:documentation "Tab size"))
 
-
 (defmethod tab-size ((obj clog-ace-element))
   (js-query obj (format nil "~A.session.getTabSize()" (js-ace obj))))
 
-(defgeneric set-tab-size (clog-ace-element tab-size)
+(defgeneric (setf tab-size) (tab-size clog-ace-element)
   (:documentation "Tab size"))
 
-
-(defmethod set-tab-size ((obj clog-ace-element) tab-size)
+(defmethod (setf tab-size) (tab-size (obj clog-ace-element))
   (js-execute obj (format nil "~A.session.setTabSize(~A)" (js-ace obj) tab-size)))
-
-(defsetf tab-size set-tab-size)
 
 ;;;;;;;;;;;;;;;;
 ;; text-value ;;
@@ -151,18 +91,14 @@
 (defgeneric theme (clog-ace-element)
   (:documentation "The ace color theme. eg. ace/theme/xcode"))
 
-
 (defmethod theme ((obj clog-ace-element) )
   (js-query obj (format nil "~A.getTheme()" (js-ace obj))))
 
-(defgeneric set-theme (clog-ace-element theme)
+(defgeneric (setf theme) (theme clog-ace-element)
   (:documentation "The ace color theme. eg. ace/theme/xcode"))
 
-
-(defmethod set-theme ((obj clog-ace-element) theme)
+(defmethod (setf theme) (theme (obj clog-ace-element))
   (js-execute obj (format nil "~A.setTheme('~A')" (js-ace obj) theme)))
-
-(defsetf theme set-theme)
 
 ;;;;;;;;;;;;;;;;;;;
 ;; selected-text ;;
@@ -245,13 +181,65 @@ the CLOG-ACE-ELEMENT"))
   (js-execute obj (format nil "~A.resize()" (js-ace obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Events - clog-ace-element
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod set-on-change ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-change" (lambda (obj)
+                                       (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('change', function()~
+                                  {~A.trigger('clog-ace-change')})"
+                          (js-ace obj)
+                          (jquery obj))))
+
+(defmethod set-on-blur ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-blur" (lambda (obj)
+                                      (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('blur', function()~
+                                  {~A.trigger('clog-ace-blur')})"
+                          (js-ace obj)
+                          (jquery obj))))
+
+(defmethod set-on-focus ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-focus" (lambda (obj)
+                                       (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('focus', function()~
+                                  {~A.trigger('clog-ace-focus')})"
+                           (js-ace obj)
+                           (jquery obj))))
+
+(defmethod set-on-cut ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-cut" (lambda (obj)
+                                       (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('cut', function()~
+                                  {~A.trigger('clog-ace-cut')})"
+                          (js-ace obj)
+                          (jquery obj))))
+
+(defmethod set-on-copy ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-copy" (lambda (obj)
+                                        (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('copy', function()~
+                                  {~A.trigger('clog-ace-copy')})"
+                          (js-ace obj)
+                          (jquery obj))))
+
+(defmethod set-on-paste ((obj clog-ace-element) handler)
+  (set-on-event obj "clog-ace-paste" (lambda (obj)
+                                        (funcall handler obj)))
+  (js-execute obj (format nil "~A.on('paste', function()~
+                                  {~A.trigger('clog-ace-paste')})"
+                          (js-ace obj)
+                          (jquery obj))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Implementation - js binding
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun init-clog-ace (obj)
   (check-type obj clog:clog-obj)
   (load-script (html-document (connection-data-item obj "clog-body"))
-	       "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js"))
+               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js"))
 
 (defun js-ace (obj)
   "Javascript editor variable (private)"
@@ -262,28 +250,28 @@ the CLOG-ACE-ELEMENT"))
   "Initialize plugin"
   (init-clog-ace obj)
   (js-execute obj (format nil "~A = ace.edit('~A')"
-			  (js-ace obj) (html-id obj))))
+                          (js-ace obj) (html-id obj))))
 
 (defun on-test-clog-ace (body)
   (clog:debug-mode body)
   ;; Use the panel-box-layout to center horizontally
   ;; and vertically our div on the screen.
   (let* ((layout (create-panel-box-layout body))
-	 (test   (create-clog-ace-element (center-panel layout)))
-	 (button (create-button (top-panel layout) :content "Resize"))
-	 (sel    (create-button (top-panel layout) :content "Selection"))
-	 (stext  (create-button (top-panel layout) :content "Set Text"))
-	 (text   (create-button (top-panel layout) :content "Text")))
+         (test   (create-clog-ace-element (center-panel layout)))
+         (button (create-button (top-panel layout) :content "Resize"))
+         (sel    (create-button (top-panel layout) :content "Selection"))
+         (stext  (create-button (top-panel layout) :content "Set Text"))
+         (text   (create-button (top-panel layout) :content "Text")))
     (center-children (center-panel layout))
     (set-on-cut test (lambda (obj)
-		       (declare (ignore obj))
-		       (print "cut")))
+                       (declare (ignore obj))
+                       (print "cut")))
     (set-on-copy test (lambda (obj)
-			(declare (ignore obj))
-		       (print "copy")))
+                        (declare (ignore obj))
+                       (print "copy")))
     (set-on-paste test (lambda (obj)
-			 (declare (ignore obj))
-		       (print "paste")))
+                         (declare (ignore obj))
+                       (print "paste")))
     (set-on-focus test (lambda (obj)
 			 (declare (ignore obj))
 			 (print "focus")))

@@ -184,53 +184,32 @@ the CLOG-ACE-ELEMENT"))
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun set-ace-event (obj event handler)
+  (set-on-event obj (format nil "clog-ace-~A" event) handler)
+  (if handler
+      (js-execute obj (format nil "~A.on('~A', function()~
+                                  {~A.trigger('clog-ace-~A')})"
+                              (js-ace obj) event
+                              (jquery obj) event))
+      (js-execute obj (format nil "~A.off('~A')" (js-ace obj) event))))  
+
 (defmethod set-on-change ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-change" (lambda (obj)
-                                       (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('change', function()~
-                                  {~A.trigger('clog-ace-change')})"
-                          (js-ace obj)
-                          (jquery obj))))
+  (set-ace-event obj "change" handler))
 
 (defmethod set-on-blur ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-blur" (lambda (obj)
-                                      (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('blur', function()~
-                                  {~A.trigger('clog-ace-blur')})"
-                          (js-ace obj)
-                          (jquery obj))))
+  (set-ace-event obj "blur" handler))
 
 (defmethod set-on-focus ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-focus" (lambda (obj)
-                                       (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('focus', function()~
-                                  {~A.trigger('clog-ace-focus')})"
-                           (js-ace obj)
-                           (jquery obj))))
+  (set-ace-event obj "focus" handler))
 
 (defmethod set-on-cut ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-cut" (lambda (obj)
-                                       (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('cut', function()~
-                                  {~A.trigger('clog-ace-cut')})"
-                          (js-ace obj)
-                          (jquery obj))))
+  (set-ace-event obj "cut" handler))
 
 (defmethod set-on-copy ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-copy" (lambda (obj)
-                                        (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('copy', function()~
-                                  {~A.trigger('clog-ace-copy')})"
-                          (js-ace obj)
-                          (jquery obj))))
+  (set-ace-event obj "copy" handler))
 
 (defmethod set-on-paste ((obj clog-ace-element) handler)
-  (set-on-event obj "clog-ace-paste" (lambda (obj)
-                                        (funcall handler obj)))
-  (js-execute obj (format nil "~A.on('paste', function()~
-                                  {~A.trigger('clog-ace-paste')})"
-                          (js-ace obj)
-                          (jquery obj))))
+  (set-ace-event obj "paste" handler))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Implementation - js binding

@@ -3,8 +3,8 @@
   (:export clog-ace-element
 	   create-clog-ace-element
 	   mode text-value theme tab-size
-	   clipboard-copy clipboard-paste
-	   excute-command focus move-cursor resize selected-text
+	   clipboard-copy clipboard-paste set-auto-completion
+	   execute-command focus move-cursor resize selected-text
            init-clog-ace
 	   attach-clog-ace
            start-test))
@@ -180,6 +180,25 @@ the CLOG-ACE-ELEMENT"))
 (defmethod resize ((obj clog-ace-element))
   (js-execute obj (format nil "~A.resize()" (js-ace obj))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; set-auto-completion ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric set-auto-completion (clog-ace-element auto-completion)
+  (:documentation "Turn auto complete on or off"))
+
+(defmethod set-auto-completion ((obj clog-ace-element) auto-completion)
+  (js-execute obj (format nil "~A.setOption('enableBasicAutocompletion', ~A)"
+			  (js-ace obj)
+			  (if auto-completion
+			      "true"
+			      "false")))
+  (js-execute obj (format nil "~A.setOption('enableLiveAutocompletion', ~A)"
+			  (js-ace obj)
+			  (if auto-completion
+			      "true"
+			      "false"))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -191,7 +210,7 @@ the CLOG-ACE-ELEMENT"))
                                   {~A.trigger('clog-ace-~A')})"
                               (js-ace obj) event
                               (jquery obj) event))
-      (js-execute obj (format nil "~A.off('~A')" (js-ace obj) event))))  
+      (js-execute obj (format nil "~A.off('~A')" (js-ace obj) event))))
 
 (defmethod set-on-change ((obj clog-ace-element) handler)
   (set-ace-event obj "change" handler))
@@ -218,7 +237,9 @@ the CLOG-ACE-ELEMENT"))
 (defun init-clog-ace (obj)
   (check-type obj clog:clog-obj)
   (load-script (html-document (connection-data-item obj "clog-body"))
-               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js"))
+               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js")
+  (load-script (html-document (connection-data-item obj "clog-body"))
+               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ext-language_tools.js"))
 
 (defun js-ace (obj)
   "Javascript editor variable (private)"
@@ -242,6 +263,7 @@ the CLOG-ACE-ELEMENT"))
          (stext  (create-button (top-panel layout) :content "Set Text"))
          (text   (create-button (top-panel layout) :content "Text")))
     (center-children (center-panel layout))
+    (set-auto-completion test t)
     (set-on-cut test (lambda (obj)
                        (declare (ignore obj))
                        (print "cut")))

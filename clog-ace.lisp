@@ -5,7 +5,7 @@
 	   mode text-value theme tab-size
 	   clipboard-copy clipboard-paste set-auto-completion
 	   execute-command focus move-cursor resize selected-text
-           init-clog-ace
+           init-clog-ace set-on-auto-complete
 	   attach-clog-ace
            start-test))
 
@@ -203,6 +203,25 @@ the CLOG-ACE-ELEMENT"))
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmethod set-on-auto-complete ((obj clog-ace-element) handler &key (meta "clog"))
+  (set-on-event-with-data obj "clog-ace-auto-complete"
+			  (lambda (obj data)
+			    (js-execute obj (format nil "clog['~A-ace'](null,[~{~A~}])"
+						    (html-id obj)
+						    (mapcar (lambda (s)
+							      (format nil "{'caption':'~A','value':'~A','score':1,'meta':'~A'},"
+								      s s meta))
+							    (funcall handler obj data))))))
+  (when handler
+    (js-execute obj
+		(format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~
+                               clog['~A-ace']=callback;
+                               ~A.trigger('clog-ace-auto-complete', prefix);}};~
+                               var lt=ace.require('ace/ext/language_tools');lt.addCompleter(comps);"
+			(html-id obj)
+			(jquery obj)))))
+      
+
 (defun set-ace-event (obj event handler)
   (set-on-event obj (format nil "clog-ace-~A" event) handler)
   (if handler
@@ -264,6 +283,8 @@ the CLOG-ACE-ELEMENT"))
          (text   (create-button (top-panel layout) :content "Text")))
     (center-children (center-panel layout))
     (set-auto-completion test t)
+    (set-on-auto-complete test (lambda (obj data)
+				 (list "test" "wall" "super")))
     (set-on-cut test (lambda (obj)
                        (declare (ignore obj))
                        (print "cut")))

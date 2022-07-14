@@ -2,7 +2,7 @@
   (:use #:cl #:clog)
   (:export clog-ace-element
 	   create-clog-ace-element
-	   mode text-value theme tab-size
+	   mode text-value theme tab-size read-only-p
 	   clipboard-copy clipboard-paste set-auto-completion
 	   execute-command focus move-cursor resize selected-text
            init-clog-ace set-on-auto-complete
@@ -74,6 +74,25 @@
 (defmethod (setf tab-size) (tab-size (obj clog-ace-element))
   (js-execute obj (format nil "~A.session.setTabSize(~A)" (js-ace obj) tab-size)))
 
+;;;;;;;;;;;;;;;;;
+;; read-only-p ;;
+;;;;;;;;;;;;;;;;;
+
+(defgeneric read-only-p (clog-ace-element)
+  (:documentation "Get/Setf ace edit read-only status"))
+
+(defmethod read-only-p ((obj clog-ace-element))
+  (when (equal "true" (js-query obj (format nil "~A.getReadOnly()" (js-ace obj))))
+    t))
+
+(defgeneric (setf read-only-p) (read-only clog-ace-element)
+  (:documentation "Set the ace edit read-only status"))
+
+(defmethod (setf read-only-p) (read-only (obj clog-ace-element))
+  (js-execute obj (format nil "~A.setReadOnly(~A)" (js-ace obj) (if read-only
+								    "true"
+								    "false"))))
+
 ;;;;;;;;;;;;;;;;
 ;; text-value ;;
 ;;;;;;;;;;;;;;;;
@@ -82,7 +101,7 @@
   (js-query obj (format nil "~A.getValue()" (js-ace obj))))
 
 (defmethod (setf text-value) (value (obj clog-ace-element))
-  (js-execute obj (format nil "~A.setValue('~A')" (js-ace obj) (escape-string value))))
+  (js-execute obj (format nil "~A.setValue('~A', -1)" (js-ace obj) (escape-string value))))
 
 ;;;;;;;;;;;
 ;; theme ;;
@@ -91,7 +110,7 @@
 (defgeneric theme (clog-ace-element)
   (:documentation "The ace color theme. eg. ace/theme/xcode"))
 
-(defmethod theme ((obj clog-ace-element) )
+(defmethod theme ((obj clog-ace-element))
   (js-query obj (format nil "~A.getTheme()" (js-ace obj))))
 
 (defgeneric (setf theme) (theme clog-ace-element)
@@ -220,7 +239,7 @@ the CLOG-ACE-ELEMENT"))
                                var lt=ace.require('ace/ext/language_tools');lt.addCompleter(comps);"
 			(html-id obj)
 			(jquery obj)))))
-      
+
 
 (defun set-ace-event (obj event handler)
   (set-on-event obj (format nil "clog-ace-~A" event) handler)
@@ -283,6 +302,11 @@ the CLOG-ACE-ELEMENT"))
          (text   (create-button (top-panel layout) :content "Text")))
     (center-children (center-panel layout))
     (set-auto-completion test t)
+    (print (read-only-p test))
+    (setf (read-only-p test) t)
+    (print (read-only-p test))
+    (setf (read-only-p test) nil)
+    (print (read-only-p test))
     (set-on-auto-complete test (lambda (obj data)
 				 (list "test" "wall" "super")))
     (set-on-cut test (lambda (obj)

@@ -222,15 +222,23 @@ the CLOG-ACE-ELEMENT"))
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod set-on-auto-complete ((obj clog-ace-element) handler &key (meta "clog"))
-  (set-on-event-with-data obj "clog-ace-auto-complete"
-			  (lambda (obj data)
-			    (js-execute obj (format nil "clog['~A-ace'](null,[~{~A~}])"
-						    (html-id obj)
-						    (mapcar (lambda (s)
-							      (format nil "{'caption':'~A','value':'~A','score':1,'meta':'~A'},"
-								      s s meta))
-							    (funcall handler obj data))))))
+(defmethod set-on-auto-complete ((obj clog-ace-element) handler
+				 &key (default-score 100) (meta "clog"))
+  (set-on-event-with-data
+   obj "clog-ace-auto-complete"
+   (lambda (obj data)
+     (js-execute obj (format nil "clog['~A-ace'](null,[~{~A~}])"
+			     (html-id obj)
+			     (mapcar (lambda (s)
+				       (if (typep s 'string)
+					   (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
+						   s s default-score meta)
+					   (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
+						   (or (getf s :caption) (getf s :value))
+						   (or (getf s :value) (getf s :caption))
+						   (or (getf s :score) default-score)
+						   (or (getf s :meta) or meta))))
+				     (funcall handler obj data))))))
   (when handler
     (js-execute obj
 		(format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~

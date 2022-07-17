@@ -27,7 +27,7 @@
 					   (class nil)
 					   (html-id nil)
 					       (auto-place t))
-  "Not used by builder, but used to create in non-builder code"
+  "Create ace editor"
   (let ((new-obj (create-div obj
 			     :class class
 			     :hidden hidden
@@ -35,8 +35,8 @@
 			     :auto-place auto-place)))
     (set-geometry new-obj :width 400 :height 200)
     (set-border new-obj :thin :solid :black)
-    (attach-clog-ace new-obj)
-    (change-class new-obj 'clog-ace-element)))
+    (change-class new-obj 'clog-ace-element)
+    (attach-clog-ace new-obj)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Properties - clog-ace-element
@@ -280,20 +280,25 @@ the CLOG-ACE-ELEMENT"))
 ;; Implementation - js binding
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun init-clog-ace (obj)
-  (check-type obj clog:clog-obj)
+(defgeneric init-clog-ace (clog-ace-element)
+  (:documentation "Initialize ace library"))
+
+(defmethod init-clog-ace ((obj clog-ace-element))
   (load-script (html-document (connection-data-item obj "clog-body"))
                "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js")
   (load-script (html-document (connection-data-item obj "clog-body"))
                "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ext-language_tools.js"))
 
-(defun js-ace (obj)
-  "Javascript editor variable (private)"
-  (check-type obj clog:clog-obj)
+(defgeneric js-ace (clog-ace-element)
+  (:documentation "Access to ace javascript object (private)"))
+
+(defmethod js-ace ((obj clog-ace-element))
   (format nil "clog['editor_~A']" (html-id obj)))
 
-(defun attach-clog-ace (obj)
-  "Initialize plugin"
+(defgeneric attach-clog-ace (clog-ace-element)
+  (:documentation "Initialize plugin"))
+
+(defmethod attach-clog-ace ((obj clog-ace-element))
   (init-clog-ace obj)
   (js-execute obj (format nil "~A = ace.edit('~A')"
                           (js-ace obj) (html-id obj))))

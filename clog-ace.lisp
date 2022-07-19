@@ -1,12 +1,12 @@
 (defpackage #:clog-ace
   (:use #:cl #:clog)
   (:export clog-ace-element
-	   create-clog-ace-element
-	   mode text-value theme tab-size read-only-p
-	   clipboard-copy clipboard-paste set-auto-completion
-	   execute-command focus move-cursor resize selected-text
+           create-clog-ace-element
+           mode text-value theme tab-size read-only-p
+           clipboard-copy clipboard-paste set-auto-completion
+           execute-command focus move-cursor resize selected-text
            init-clog-ace set-on-auto-complete
-	   attach-clog-ace
+           attach-clog-ace
            start-test))
 
 (in-package :clog-ace)
@@ -22,17 +22,17 @@
   (:documentation "Create a new clog-ace-element as child of CLOG-OBJ."))
 
 (defmethod create-clog-ace-element ((obj clog:clog-obj)
-					 &key
-					   (hidden nil)
-					   (class nil)
-					   (html-id nil)
-					       (auto-place t))
+                                         &key
+                                           (hidden nil)
+                                           (class nil)
+                                           (html-id nil)
+                                               (auto-place t))
   "Create ace editor"
   (let ((new-obj (create-div obj
-			     :class class
-			     :hidden hidden
-			     :html-id html-id
-			     :auto-place auto-place)))
+                             :class class
+                             :hidden hidden
+                             :html-id html-id
+                             :auto-place auto-place)))
     (set-geometry new-obj :width 400 :height 200)
     (set-border new-obj :thin :solid :black)
     (change-class new-obj 'clog-ace-element)
@@ -90,8 +90,8 @@
 
 (defmethod (setf read-only-p) (read-only (obj clog-ace-element))
   (js-execute obj (format nil "~A.setReadOnly(~A)" (js-ace obj) (if read-only
-								    "true"
-								    "false"))))
+                                                                    "true"
+                                                                    "false"))))
 
 ;;;;;;;;;;;;;;;;
 ;; text-value ;;
@@ -144,9 +144,9 @@
   (js-query obj (format nil "~A.execCommand('copy');~
                              navigator.clipboard.writeText(~A.getCopyText());~
                              ~A.getCopyText();"
-			(js-ace obj)
-			(js-ace obj)
-			(js-ace obj))))
+                        (js-ace obj)
+                        (js-ace obj)
+                        (js-ace obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; clipboard-paste ;;
@@ -159,7 +159,7 @@
   (js-execute obj (format nil "navigator.clipboard.readText().then(function(text) {~
                                         editor_~A.execCommand('paste', text)~
                                      }"
-			  (js-ace obj))))
+                          (js-ace obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; execute-command ;;
@@ -208,45 +208,45 @@ the CLOG-ACE-ELEMENT"))
 
 (defmethod set-auto-completion ((obj clog-ace-element) auto-completion)
   (js-execute obj (format nil "~A.setOption('enableBasicAutocompletion', ~A)"
-			  (js-ace obj)
-			  (if auto-completion
-			      "true"
-			      "false")))
+                          (js-ace obj)
+                          (if auto-completion
+                              "true"
+                              "false")))
   (js-execute obj (format nil "~A.setOption('enableLiveAutocompletion', ~A)"
-			  (js-ace obj)
-			  (if auto-completion
-			      "true"
-			      "false"))))
+                          (js-ace obj)
+                          (if auto-completion
+                              "true"
+                              "false"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod set-on-auto-complete ((obj clog-ace-element) handler
-				 &key (default-score 100) (meta "clog"))
+                                 &key (default-score 100) (meta "clog"))
   (set-on-event-with-data
    obj "clog-ace-auto-complete"
    (lambda (obj data)
      (js-execute obj (format nil "clog['~A-ace'](null,[~{~A~}])"
-			     (html-id obj)
-			     (mapcar (lambda (s)
-				       (if (typep s 'string)
-					   (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
-						   s s default-score meta)
-					   (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
-						   (or (getf s :caption) (getf s :value))
-						   (or (getf s :value) (getf s :caption))
-						   (or (getf s :score) default-score)
-						   (or (getf s :meta) or meta))))
-				     (funcall handler obj data))))))
+                             (html-id obj)
+                             (mapcar (lambda (s)
+                                       (if (typep s 'string)
+                                           (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
+                                                   s s default-score meta)
+                                           (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
+                                                   (or (getf s :caption) (getf s :value))
+                                                   (or (getf s :value) (getf s :caption))
+                                                   (or (getf s :score) default-score)
+                                                   (or (getf s :meta) or meta))))
+                                     (funcall handler obj data))))))
   (when handler
     (js-execute obj
-		(format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~
+                (format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~
                                clog['~A-ace']=callback;
                                ~A.trigger('clog-ace-auto-complete', prefix);}};~
                                var lt=ace.require('ace/ext/language_tools');lt.addCompleter(comps);"
-			(html-id obj)
-			(jquery obj)))))
+                        (html-id obj)
+                        (jquery obj)))))
 
 
 (defun set-ace-event (obj event handler)
@@ -321,7 +321,7 @@ the CLOG-ACE-ELEMENT"))
     (setf (read-only-p test) nil)
     (print (read-only-p test))
     (set-on-auto-complete test (lambda (obj data)
-				 (list "test" "wall" "super")))
+                                 (list "test" "wall" "super")))
     (set-on-cut test (lambda (obj)
                        (declare (ignore obj))
                        (print "cut")))
@@ -332,30 +332,30 @@ the CLOG-ACE-ELEMENT"))
                          (declare (ignore obj))
                        (print "paste")))
     (set-on-focus test (lambda (obj)
-			 (declare (ignore obj))
-			 (print "focus")))
+                         (declare (ignore obj))
+                         (print "focus")))
     (set-on-blur test (lambda (obj)
-			(declare (ignore obj))
-			(print "blur")))
+                        (declare (ignore obj))
+                        (print "blur")))
     (set-on-change test (lambda (obj)
-			  (declare (ignore obj))
-			  (print "change")))
+                          (declare (ignore obj))
+                          (print "change")))
     (set-on-click stext (lambda (obj)
-			 (declare (ignore obj))
-			 (setf (text-value test) "test text")))
+                         (declare (ignore obj))
+                         (setf (text-value test) "test text")))
     (set-on-click text (lambda (obj)
-			 (declare (ignore obj))
-			 (print (text-value test))))
+                         (declare (ignore obj))
+                         (print (text-value test))))
     (set-on-click sel (lambda (obj)
-			 (declare (ignore obj))
-			 (print (selected-text test))))
+                         (declare (ignore obj))
+                         (print (selected-text test))))
     (set-on-click button (lambda (obj)
-			   (declare (ignore obj))
-			   (set-geometry test :height 300)
-			   (clog-ace:resize test)))))
+                           (declare (ignore obj))
+                           (set-geometry test :height 300)
+                           (clog-ace:resize test)))))
 
 (defun start-test ()
   (initialize 'on-test-clog-ace
    :static-root (merge-pathnames "./www/"
-		  (asdf:system-source-directory :clog-ace)))
+                  (asdf:system-source-directory :clog-ace)))
   (open-browser))

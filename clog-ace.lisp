@@ -157,8 +157,8 @@
 
 (defmethod clipboard-paste ((obj clog-ace-element))
   (js-execute obj (format nil "navigator.clipboard.readText().then(function(text) {~
-                                        editor_~A.execCommand('paste', text)~
-                                     }"
+                                        ~A.execCommand('paste', text)~
+                                     })"
                           (js-ace obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;

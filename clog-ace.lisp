@@ -4,7 +4,7 @@
            create-clog-ace-element
            mode text-value theme tab-size read-only-p
            clipboard-copy clipboard-cut clipboard-paste
-           set-auto-completion
+           set-auto-completion get-mode-from-extension
            execute-command focus move-cursor resize selected-text
            init-clog-ace set-on-auto-complete
            attach-clog-ace
@@ -193,6 +193,17 @@
 (defmethod focus ((obj clog-ace-element))
   (js-execute obj (format nil "~A.focus()" (js-ace obj))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; get-mode-from-extension ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod get-mode-from-extension (clog-ace-element file-name)
+  (:documentation "Returns the mode to use based on the FILE-NAME"))
+
+(defmethod get-mode-from-extension ((obj clog-ace-element) file-name)
+  (js-query obj (format nil "var modelist = ace.require('ace/ext/modelist'); ~
+                             modelist.getModeForPath('~A').mode;" file-name)))
+
 ;;;;;;;;;;;;;;;;;
 ;; move-cursor ;;
 ;;;;;;;;;;;;;;;;;
@@ -302,7 +313,9 @@ the CLOG-ACE-ELEMENT"))
   (load-script (html-document (connection-data-item obj "clog-body"))
                "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js")
   (load-script (html-document (connection-data-item obj "clog-body"))
-               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ext-language_tools.js"))
+               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ext-language_tools.js")
+  (load-script (html-document (connection-data-item obj "clog-body"))
+               "https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ext-modelist.js"))
 
 (defgeneric js-ace (clog-ace-element)
   (:documentation "Access to ace javascript object (private)"))

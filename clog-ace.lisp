@@ -3,7 +3,8 @@
   (:export clog-ace-element
            create-clog-ace-element
            mode text-value theme tab-size read-only-p
-           clipboard-copy clipboard-paste set-auto-completion
+           clipboard-copy clipboard-cut clipboard-paste
+           set-auto-completion
            execute-command focus move-cursor resize selected-text
            init-clog-ace set-on-auto-complete
            attach-clog-ace
@@ -147,6 +148,20 @@
                         (js-ace obj)
                         (js-ace obj)
                         (js-ace obj))))
+
+;;;;;;;;;;;;;;;;;;;
+;; clipboard-cut ;;
+;;;;;;;;;;;;;;;;;;;
+
+(defgeneric clipboard-cut (clog-ace-element)
+  (:documentation "Copy selected text to global clipboard and return text."))
+
+(defmethod clipboard-cut ((obj clog-ace-element))
+  (let ((res (selected-text obj)))
+    (js-execute obj (format nil "navigator.clipboard.writeText(~A.getCopyText());~
+                                  ~A.execCommand('cut')"
+                            (js-ace obj)
+                            (js-ace obj)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; clipboard-paste ;;

@@ -248,8 +248,6 @@ the CLOG-ACE-ELEMENT"))
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defparameter *completer-installed* nil)
-
 (defun set-on-auto-complete (obj handler
                              &key (default-score 100) (meta "clog"))
   "There can only be one auto complete handler per application currently."
@@ -267,14 +265,13 @@ the CLOG-ACE-ELEMENT"))
                                                    (or (getf s :score) default-score)
                                                    (or (getf s :meta) meta))))
                                      (funcall handler obj data))))))
-  (unless *completer-installed*
-    (js-execute obj
-                (format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~
+  (js-execute obj
+              (format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~
                                clog['clog-ace-callback']=callback;
                                ~A.trigger('clog-ace-auto-complete', prefix);}};~
                                var lt=ace.require('ace/ext/language_tools');lt.addCompleter(comps);"
-                        (jquery obj)))
-    (setf *completer-installed* t)))
+                      (jquery obj)))
+  (setf *completer-installed* t))
 
 (defun set-ace-event (obj event handler)
   (set-on-event obj (format nil "clog-ace-~A" event) handler)

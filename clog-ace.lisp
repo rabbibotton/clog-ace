@@ -248,13 +248,15 @@ the CLOG-ACE-ELEMENT"))
 ;; Events - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod set-on-auto-complete ((obj clog-ace-element) handler
-                                 &key (default-score 100) (meta "clog"))
+(defparameter *completer-installed* nil)
+
+(defun set-on-auto-complete (obj handler
+                             &key (default-score 100) (meta "clog"))
+  "There can only be one auto complete handler per application currently."
   (set-on-event-with-data
    obj "clog-ace-auto-complete"
    (lambda (obj data)
-     (js-execute obj (format nil "clog['~A-ace'](null,[~{~A~}])"
-                             (html-id obj)
+     (js-execute obj (format nil "clog['clog-ace-callback'](null,[~{~A~}])"
                              (mapcar (lambda (s)
                                        (if (typep s 'string)
                                            (format nil "{'caption':'~A','value':'~A','score':~A,'meta':'~A'},"
@@ -263,17 +265,16 @@ the CLOG-ACE-ELEMENT"))
                                                    (or (getf s :caption) (getf s :value))
                                                    (or (getf s :value) (getf s :caption))
                                                    (or (getf s :score) default-score)
-                                                   (or (getf s :meta) or meta))))
+                                                   (or (getf s :meta) meta))))
                                      (funcall handler obj data))))))
-  (when handler
+  (unless *completer-installed*
     (js-execute obj
                 (format nil "var comps={getCompletions: function(editor, session, pos, prefix, callback) {~
-                               clog['~A-ace']=callback;
+                               clog['clog-ace-callback']=callback;
                                ~A.trigger('clog-ace-auto-complete', prefix);}};~
                                var lt=ace.require('ace/ext/language_tools');lt.addCompleter(comps);"
-                        (html-id obj)
-                        (jquery obj)))))
-
+                        (jquery obj)))
+    (setf *completer-installed* t)))
 
 (defun set-ace-event (obj event handler)
   (set-on-event obj (format nil "clog-ace-~A" event) handler)

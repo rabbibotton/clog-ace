@@ -72,4 +72,4 @@
                              :attr "data-clog-ace-tab-size")
                             ,@clog-tools::*props-element*))))
   (format t "~%clog-ace installed in CLOG Builder")
-  (format t "~%if /clog-ace/src exists in your static root  will use for local copy of ace.~%"))
+  (format t "~%Copy www/clog-ace/ to your static root if desire a local copy of ace, instead of internet based.~%"))

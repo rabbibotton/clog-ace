@@ -5,7 +5,7 @@
            mode text-value theme tab-size read-only-p
            clipboard-copy clipboard-cut clipboard-paste
            set-auto-completion get-mode-from-extension
-           execute-command focus move-cursor resize selected-text
+           execute-command focus get-cursor move-cursor resize selected-text
            init-clog-ace set-on-auto-complete
            attach-clog-ace
            start-test))
@@ -203,6 +203,18 @@
 (defmethod get-mode-from-extension ((obj clog-ace-element) file-name)
   (js-query obj (format nil "var modelist = ace.require('ace/ext/modelist'); ~
                              modelist.getModeForPath('~A').mode;" file-name)))
+
+;;;;;;;;;;;;;;;;;
+;; get-cursor ;;
+;;;;;;;;;;;;;;;;;
+
+(defgeneric get-cursor (clog-ace-element)
+  (:documentation "get cursor x y position"))
+
+(defmethod get-cursor ((obj clog-ace-element))
+  (let ((row (js-query obj (format nil "~A.selection.getCursor().row" (js-ace obj))))
+        (column (js-query obj (format nil "~A.selection.getCursor().column" (js-ace obj)))))
+    (values (js-to-integer row) (js-to-integer column))))
 
 ;;;;;;;;;;;;;;;;;
 ;; move-cursor ;;

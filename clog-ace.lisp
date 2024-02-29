@@ -5,7 +5,7 @@
            mode text-value theme tab-size read-only-p
            clipboard-copy clipboard-cut clipboard-paste
            set-auto-completion get-mode-from-extension
-           execute-command focus move-cursor resize selected-text
+           execute-command focus get-cursor move-cursor resize selected-text
            init-clog-ace set-on-auto-complete
            attach-clog-ace
            start-test))
@@ -205,14 +205,27 @@
                              modelist.getModeForPath('~A').mode;" file-name)))
 
 ;;;;;;;;;;;;;;;;;
+;; get-cursor ;;
+;;;;;;;;;;;;;;;;;
+
+(defgeneric get-cursor (clog-ace-element)
+  (:documentation "get cursor x y position"))
+
+(defmethod get-cursor ((obj clog-ace-element))
+  (let ((row (js-query obj (format nil "~A.selection.getCursor().row" (js-ace obj))))
+        (column (js-query obj (format nil "~A.selection.getCursor().column" (js-ace obj)))))
+    (values (js-to-integer row) (js-to-integer column))))
+
+;;;;;;;;;;;;;;;;;
 ;; move-cursor ;;
 ;;;;;;;;;;;;;;;;;
 
-(defgeneric move-cursor (clog-ace-element x y)
-  (:documentation "move-cursor to x y"))
+(defgeneric move-cursor (clog-ace-element row column)
+  (:documentation "move-cursor to row column"))
 
-(defmethod move-cursor ((obj clog-ace-element) x y)
-  (js-execute obj (format nil "~A.moveCursorTo(~A,~A)" (js-ace obj) x y)))
+(defmethod move-cursor ((obj clog-ace-element) row column)
+  (js-execute obj (format nil "~A.selection.clearSelection()" (js-ace obj)))
+  (js-execute obj (format nil "~A.selection.moveCursorTo(~A,~A)" (js-ace obj) row column)))
 
 ;;;;;;;;;;;;
 ;; resize ;;
@@ -348,7 +361,9 @@ the CLOG-ACE-ELEMENT"))
          (button (create-button (top-panel layout) :content "Resize"))
          (sel    (create-button (top-panel layout) :content "Selection"))
          (stext  (create-button (top-panel layout) :content "Set Text"))
-         (text   (create-button (top-panel layout) :content "Text")))
+         (text   (create-button (top-panel layout) :content "Text"))
+         (move   (create-button (top-panel layout) :content "Move cursor"))
+         (cursor   (create-button (top-panel layout) :content "Get cursor")))
     (center-children (center-panel layout))
     (set-auto-completion test t)
     (print (read-only-p test))
@@ -378,7 +393,8 @@ the CLOG-ACE-ELEMENT"))
                           (print "change")))
     (set-on-click stext (lambda (obj)
                          (declare (ignore obj))
-                         (setf (text-value test) "test text")))
+                         (setf (text-value test) "test text
+second line")))
     (set-on-click text (lambda (obj)
                          (declare (ignore obj))
                          (print (text-value test))))
@@ -388,7 +404,16 @@ the CLOG-ACE-ELEMENT"))
     (set-on-click button (lambda (obj)
                            (declare (ignore obj))
                            (set-geometry test :height 300)
-                           (clog-ace:resize test)))))
+                           (clog-ace:resize test)))
+    (set-on-click move (lambda (obj)
+                         (declare (ignore obj))
+                         (move-cursor test 1 7)))
+    (set-on-click cursor (lambda (obj)
+                           (declare (ignore obj))
+                           (multiple-value-bind (row column)
+                               (get-cursor test)
+                             (format t "~%Row: ~a, column: ~a~%" row column))))
+))
 
 (defun start-test ()
   (initialize 'on-test-clog-ace

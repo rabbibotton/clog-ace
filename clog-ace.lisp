@@ -208,11 +208,12 @@
 ;; move-cursor ;;
 ;;;;;;;;;;;;;;;;;
 
-(defgeneric move-cursor (clog-ace-element x y)
-  (:documentation "move-cursor to x y"))
+(defgeneric move-cursor (clog-ace-element row column)
+  (:documentation "move-cursor to row column"))
 
-(defmethod move-cursor ((obj clog-ace-element) x y)
-  (js-execute obj (format nil "~A.moveCursorTo(~A,~A)" (js-ace obj) x y)))
+(defmethod move-cursor ((obj clog-ace-element) row column)
+  (js-execute obj (format nil "~A.selection.clearSelection()" (js-ace obj)))
+  (js-execute obj (format nil "~A.selection.moveCursorTo(~A,~A)" (js-ace obj) row column)))
 
 ;;;;;;;;;;;;
 ;; resize ;;

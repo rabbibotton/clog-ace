@@ -32,7 +32,7 @@
                               ;; tell the builder this is a composite control
                               (setf (attribute control "data-clog-composite-control") "t")
                               ;; default custom attribute values and events at design time
-                              (setf (attribute control "data-clog-ace-theme") "ace/theme/xcode")
+                              (setf (attribute control "data-clog-ace-theme") "ace/theme/iplastic")
                               (setf (clog-ace:theme control) "ace/theme/xcode")
                               (setf (attribute control "data-clog-ace-mode") "ace/mode/lisp")
                               (setf (clog-ace:mode control) "ace/mode/lisp")
@@ -65,7 +65,7 @@
                             (:name "ace mode"
                              :set  ,(lambda (control obj)
                                       (setf (attribute control "data-clog-ace-mode") (text obj))
-                                      (setf (clog-ace:theme control) (text obj)))
+                                      (setf (clog-ace:mode control) (text obj)))
                              :get  ,(lambda (control)
                                       (attribute control "data-clog-ace-mode")))
                             (:name "ace tab size"

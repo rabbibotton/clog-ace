@@ -121,9 +121,9 @@
 (defmethod (setf theme) (theme (obj clog-ace-element))
   (js-execute obj (format nil "~A.setTheme('~A')" (js-ace obj) theme)))
 
-;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;
 ;; font-size ;;
-;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;
 
 (defgeneric font-size (clog-ace-element)
   (:documentation "Font size"))

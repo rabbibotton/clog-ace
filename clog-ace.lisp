@@ -5,7 +5,8 @@
            mode text-value theme tab-size read-only-p
            clipboard-copy clipboard-cut clipboard-paste
            set-auto-completion get-mode-from-extension
-           execute-command focus get-cursor move-cursor resize selected-text
+           execute-command focus get-cursor move-cursor resize
+           font-size selected-text
            init-clog-ace set-on-auto-complete
            attach-clog-ace
            start-test))
@@ -119,6 +120,22 @@
 
 (defmethod (setf theme) (theme (obj clog-ace-element))
   (js-execute obj (format nil "~A.setTheme('~A')" (js-ace obj) theme)))
+
+;;;;;;;;;;;;;;
+;; font-size ;;
+;;;;;;;;;;;;;;
+
+(defgeneric font-size (clog-ace-element)
+  (:documentation "Font size"))
+
+(defmethod font-size ((obj clog-ace-element))
+  (js-to-integer (js-query obj (format nil "~A.getFontSize()" (js-ace obj)))))
+
+(defgeneric (setf font-size) (font-size clog-ace-element)
+  (:documentation "Font size"))
+
+(defmethod (setf font-size) (font-size (obj clog-ace-element))
+  (js-execute obj (format nil "~A.setFontSize(~A)" (js-ace obj) font-size)))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; selected-text ;;

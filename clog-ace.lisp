@@ -4,7 +4,7 @@
            create-clog-ace-element
            mode text-value theme tab-size read-only-p
            clipboard-copy clipboard-cut clipboard-paste
-           set-auto-completion get-mode-from-extension
+           set-option set-auto-completion get-mode-from-extension
            execute-command focus get-cursor move-cursor resize
            font-size selected-text
            init-clog-ace set-on-auto-complete
@@ -255,6 +255,17 @@ the CLOG-ACE-ELEMENT"))
 (defmethod resize ((obj clog-ace-element))
   (js-execute obj (format nil "~A.resize()" (js-ace obj))))
 
+;;;;;;;;;;;;;;;;
+;; set-option ;;
+;;;;;;;;;;;;;;;;
+
+(defgeneric set-option (clog-ace-element name value)
+  (:documentation "Set option NAME to VALUE"))
+
+(defmethod set-option ((obj clog-ace-element) name value)
+  (js-execute obj (format nil "~A.setOption('~A', ~A)"
+                          (js-ace obj) name value)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; set-auto-completion ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -263,16 +274,11 @@ the CLOG-ACE-ELEMENT"))
   (:documentation "Turn auto complete on or off"))
 
 (defmethod set-auto-completion ((obj clog-ace-element) auto-completion)
-  (js-execute obj (format nil "~A.setOption('enableBasicAutocompletion', ~A)"
-                          (js-ace obj)
-                          (if auto-completion
-                              "true"
-                              "false")))
-  (js-execute obj (format nil "~A.setOption('enableLiveAutocompletion', ~A)"
-                          (js-ace obj)
-                          (if auto-completion
-                              "true"
-                              "false"))))
+  (let ((js-boolean (if auto-completion
+                        "true"
+                        "false")))
+    (set-option obj "enableBasicAutocompletion" js-boolean)
+    (set-option obj "enableLiveAutocompletion" js-boolean)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Events - clog-ace-element
@@ -383,6 +389,8 @@ the CLOG-ACE-ELEMENT"))
          (cursor   (create-button (top-panel layout) :content "Get cursor")))
     (center-children (center-panel layout))
     (set-auto-completion test t)
+    (set-option test "minLines" "1")
+    (set-option test "maxLines" "Infinity")
     (print (read-only-p test))
     (setf (read-only-p test) t)
     (print (read-only-p test))

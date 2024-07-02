@@ -4,7 +4,7 @@
   :license  "BSD"
   :version "0.0.0"
   :serial t
-  :depends-on (#:clog #:bordeaux-threads)
+  :depends-on (#:clog)
   :components ((:file "clog-ace")))
 
 (asdf:defsystem #:clog-ace/tools

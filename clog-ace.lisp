@@ -9,6 +9,7 @@
            font-size selected-text
            init-clog-ace set-on-auto-complete
            attach-clog-ace
+           *completer-installed*
            start-test))
 
 (in-package :clog-ace)
@@ -16,6 +17,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Implementation - clog-ace-element
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar *completer-installed* nil)
 
 (defclass clog-ace-element (clog-element)()
   (:documentation " clog-ace Element Object."))
@@ -174,11 +177,10 @@
   (:documentation "Copy selected text to global clipboard and return text."))
 
 (defmethod clipboard-cut ((obj clog-ace-element))
-  (let ((res (selected-text obj)))
     (js-execute obj (format nil "navigator.clipboard.writeText(~A.getCopyText());~
                                   ~A.execCommand('cut')"
                             (js-ace obj)
-                            (js-ace obj)))))
+                            (js-ace obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; clipboard-paste ;;
@@ -214,7 +216,7 @@
 ;; get-mode-from-extension ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod get-mode-from-extension (clog-ace-element file-name)
+(defgeneric get-mode-from-extension (clog-ace-element file-name)
   (:documentation "Returns the mode to use based on the FILE-NAME"))
 
 (defmethod get-mode-from-extension ((obj clog-ace-element) file-name)
@@ -403,6 +405,7 @@ the CLOG-ACE-ELEMENT"))
     (setf (read-only-p test) nil)
     (print (read-only-p test))
     (set-on-auto-complete test (lambda (obj data)
+                                 (declare (ignore obj data))
                                  (list "test" "wall" "super")))
     (set-on-cut test (lambda (obj)
                        (declare (ignore obj))

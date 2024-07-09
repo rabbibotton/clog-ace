@@ -8,6 +8,5 @@
   :components ((:file "clog-ace")))
 
 (asdf:defsystem #:clog-ace/tools
-  :defsystem-depends-on (:clog)
   :depends-on (#:clog-ace #:clog/tools)
   :components ((:file "clog-ace-tools")))
